@@ -11,6 +11,8 @@ HASHED_PASSWORD=$(echo "$PASSWORD" | node-red admin hash-pw)
 SETTINGS_FILE="$HOME/.node-red/settings.js"
 
 # Використовуємо sed для розкоментування та заміни потрібних рядків
-sed -i '/\/\/adminAuth: {/{N;N;N;N;s/\/\/adminAuth: {/adminAuth: {/;s/\/\/ *type: "credentials",/    type: "credentials",/;s/\/\/ *users: \[{/    users: \[{/;s/\/\/ *username: "admin",/        username: "kaiteki",/;s/\/\/ *password: "PASSWORD"/        password: "'"$HASHED_PASSWORD"'"/;s/\/\/ *permissions: "*"/        permissions: "*"/;s/\/\/ *}\]/    }]/;s/\/\/ *}\]}/    }]/}' "$SETTINGS_FILE"
+sed -i '/\/\/adminAuth: {/{N;N;N;N;s/\/\/adminAuth: {/adminAuth: {/;s/\/\/ *type: "credentials",/    type: "credentials",/;s/\/\/ *users: \[{/    users: \[{/}' "$SETTINGS_FILE"
+
+sed -i '/username: "admin",/{s/\/\/ *username: "admin",/        username: "kaiteki",/;N;s/\/\/ *password: "PASSWORD"/        password: "'"$HASHED_PASSWORD"'"/;N;s/\/\/ *permissions: "\*"/        permissions: "\*"/}' "$SETTINGS_FILE"
 
 echo "Node-RED встановлено та налаштовано з користувачем kaiteki і паролем $PASSWORD."
