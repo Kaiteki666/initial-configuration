@@ -1,17 +1,16 @@
 #!/bin/bash
 
-# Ім'я користувача orangepi, для якого буде змінено пароль
+# Ім'я користувача orangepi, для якого буде змінено ім'я та пароль
 USER_ORANGEPI="orangepi"
-USER_ROOT="root"
 
-# Перевірка наявності двох аргументів (ім'я нового користувача та пароль)
+# Перевірка наявності двох аргументів (нове ім'я користувача та пароль)
 if [ "$#" -ne 2 ]; then
-    echo "Використання: $0 <ім'я нового користувача> <пароль>"
+    echo "Використання: $0 <нове ім'я користувача> <пароль>"
     exit 1
 fi
 
 # Отримання аргументів
-NEW_USER=$1
+NEW_USERNAME=$1
 PASSWORD=$2
 
 # Зміна пароля для існуючого користувача orangepi
@@ -22,18 +21,12 @@ else
     echo "Користувач $USER_ORANGEPI не знайдений."
 fi
 
-# Зміна пароля для користувача root
-if id "$USER_ROOT" &>/dev/null; then
-    echo "$USER_ROOT:$PASSWORD" | sudo chpasswd
-    echo "Пароль для користувача $USER_ROOT був змінений на $PASSWORD."
+# Зміна імені користувача orangepi на нове ім'я
+if id "$USER_ORANGEPI" &>/dev/null; then
+    sudo usermod -l "$NEW_USERNAME" "$USER_ORANGEPI"
+    # Зміна домашнього каталогу, якщо це потрібно
+    sudo usermod -d "/home/$NEW_USERNAME" -m "$NEW_USERNAME"
+    echo "Ім'я користувача $USER_ORANGEPI було змінено на $NEW_USERNAME."
 else
-    echo "Користувач $USER_ROOT не знайдений."
-fi
-
-# Створення нового користувача
-if id "$NEW_USER" &>/dev/null; then
-    echo "Користувач $NEW_USER вже існує."
-else
-    sudo useradd -m -p "$(openssl passwd -1 $PASSWORD)" "$NEW_USER"
-    echo "Користувача $NEW_USER було створено з паролем $PASSWORD."
+    echo "Користувач $USER_ORANGEPI не знайдений."
 fi
