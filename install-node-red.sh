@@ -6,24 +6,41 @@ bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/mast
 # 2. Запускаємо Node-RED, щоб створився файл settings.js
 echo "Запускаємо Node-RED для ініціалізації файлів..."
 node-red-start &
-sleep 15  # Збільшуємо час очікування для впевненості, що Node-RED запустився
+sleep 15  # Зачекаємо, щоб Node-RED створив налаштування
 node-red-stop
 
 # 3. Генеруємо парольний хеш
 PASSWORD="23142314qW"
 HASHED_PASSWORD=$(echo "$PASSWORD" | node-red admin hash-pw)
 
-# 4. Перевіряємо наявність файлу settings.js і виводимо шлях
+# 4. Оновлюємо файл settings.js
 SETTINGS_FILE="$HOME/.node-red/settings.js"
 echo "Перевіряємо файл налаштувань за шляхом: $SETTINGS_FILE"
 
 if [ -f "$SETTINGS_FILE" ]; then
     echo "Файл settings.js знайдено. Розпочинаємо редагування..."
 
-    # Використовуємо sed для розкоментування та заміни потрібних рядків
-    sed -i '/\/\/adminAuth: {/{N;N;N;N;s/\/\/adminAuth: {/adminAuth: {/;s/\/\/ *type: "credentials",/    type: "credentials",/;s/\/\/ *users: \[{/    users: \[{/}' "$SETTINGS_FILE"
+    # 1. Розкоментовуємо рядок adminAuth
+    sed -i 's/\/\/adminAuth: {/adminAuth: {/g' "$SETTINGS_FILE"
 
-    sed -i '/username: "admin",/{s/\/\/ *username: "admin",/        username: "kaiteki",/;N;s/\/\/ *password: "PASSWORD"/        password: "'"$HASHED_PASSWORD"'"/;N;s/\/\/ *permissions: "\*"/        permissions: "\*"/}' "$SETTINGS_FILE"
+    # 2. Розкоментовуємо рядок з типом аутентифікації
+    sed -i 's/\/\/ *type: "credentials",/    type: "credentials",/g' "$SETTINGS_FILE"
+
+    # 3. Розкоментовуємо рядок з користувачами
+    sed -i 's/\/\/ *users: \[{/    users: \[{/g' "$SETTINGS_FILE"
+
+    # 4. Вставляємо ім'я користувача
+    sed -i 's/\/\/ *username: "admin",/        username: "kaiteki",/g' "$SETTINGS_FILE"
+
+    # 5. Розкоментовуємо і замінюємо парольний хеш
+    sed -i 's/\/\/ *password: "PASSWORD"/        password: "'"$HASHED_PASSWORD"'"/g' "$SETTINGS_FILE"
+
+    # 6. Розкоментовуємо права доступу
+    sed -i 's/\/\/ *permissions: "\*"/        permissions: "\*"/g' "$SETTINGS_FILE"
+
+    # 7. Розкоментовуємо закриття блоку
+    sed -i 's/\/\/ *}]/    }]/g' "$SETTINGS_FILE"
+    sed -i 's/\/\/ *},/    },/g' "$SETTINGS_FILE"
 
     echo "Файл settings.js успішно оновлений."
 else
