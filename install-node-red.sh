@@ -6,7 +6,7 @@ bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/mast
 # 2. Запускаємо Node-RED, щоб створився файл settings.js
 echo "Запускаємо Node-RED для ініціалізації файлів..."
 node-red-start &
-sleep 15  # Зачекаємо, щоб Node-RED створив налаштування
+sleep 15  # Чекаємо, щоб Node-RED створив налаштування
 node-red-stop
 
 # 3. Генеруємо парольний хеш
@@ -32,8 +32,8 @@ if [ -f "$SETTINGS_FILE" ]; then
     # 4. Вставляємо ім'я користувача
     sed -i 's/\/\/ *username: "admin",/        username: "kaiteki",/g' "$SETTINGS_FILE"
 
-    # 5. Розкоментовуємо і замінюємо парольний хеш
-    sed -i 's/\/\/ *password: "PASSWORD"/        password: "'"$HASHED_PASSWORD"'"/g' "$SETTINGS_FILE"
+    # 5. Замінюємо парольний хеш і розкоментовуємо
+    sed -i "/\/\/ *password: \"PASSWORD\"/c\\        password: \"$HASHED_PASSWORD\"," "$SETTINGS_FILE"
 
     # 6. Розкоментовуємо права доступу
     sed -i 's/\/\/ *permissions: "\*"/        permissions: "\*"/g' "$SETTINGS_FILE"
