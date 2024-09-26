@@ -20,8 +20,8 @@ echo "Перевіряємо файл налаштувань за шляхом: 
 if [ -f "$SETTINGS_FILE" ]; then
     echo "Файл settings.js знайдено. Розпочинаємо заміну закоментованого блоку..."
 
-    # Заміна закоментованого блоку на повністю розкоментований
-    sed -i '/\/\/adminAuth: {/,+6c\    adminAuth: {\n        type: "credentials",\n        users: [{\n            username: "kaiteki",\n            password: "'"$HASHED_PASSWORD"'",\n            permissions: "*"\n        }]\n    },' "$SETTINGS_FILE"
+    # Заміна закоментованого блоку на повністю розкоментований і видалення зайвої закоментованої дужки
+    sed -i '/\/\/adminAuth: {/,+7c\    adminAuth: {\n        type: "credentials",\n        users: [{\n            username: "kaiteki",\n            password: "'"$HASHED_PASSWORD"'",\n            permissions: "*"\n        }]\n    },' "$SETTINGS_FILE"
 
     echo "Файл settings.js успішно оновлений."
 else
