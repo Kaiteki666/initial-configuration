@@ -3,9 +3,14 @@
 # Визначаємо шлях до файлу
 FILE="/etc/systemd/system.conf"
 
-# Використовуємо sed з sudo для заміни закоментованої строки
-sudo sed -i '/^#RuntimeWatchdogSec=.*/d' "$FILE"  # Видаляємо закоментовану строку, якщо вона існує
-echo "RuntimeWatchdogSec=16" | sudo tee -a "$FILE" > /dev/null  # Додаємо нову строку
+# Спробуємо замінити закоментовану строку на нову
+if sudo sed -i 's/^#RuntimeWatchdogSec=.*/RuntimeWatchdogSec=16/' "$FILE"; then
+    echo "Строка замінена на RuntimeWatchdogSec=16."
+else
+    # Якщо строка не знайдена, додамо нову строку
+    echo "RuntimeWatchdogSec=16" | sudo tee -a "$FILE" > /dev/null
+    echo "Закоментована строка не знайдена. Додано RuntimeWatchdogSec=16."
+fi
 
 # Виводимо повідомлення про успішне виконання
 echo "Зміни внесені успішно!"
