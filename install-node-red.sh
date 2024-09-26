@@ -6,18 +6,20 @@ bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/mast
 # 2. Запускаємо Node-RED, щоб створився файл settings.js
 echo "Запускаємо Node-RED для ініціалізації файлів..."
 node-red-start &
-sleep 10  # Зачекаємо кілька секунд, щоб Node-RED запустився і створив налаштування
+sleep 15  # Збільшуємо час очікування для впевненості, що Node-RED запустився
 node-red-stop
 
 # 3. Генеруємо парольний хеш
 PASSWORD="23142314qW"
 HASHED_PASSWORD=$(echo "$PASSWORD" | node-red admin hash-pw)
 
-# 4. Оновлюємо файл settings.js
+# 4. Перевіряємо наявність файлу settings.js і виводимо шлях
 SETTINGS_FILE="$HOME/.node-red/settings.js"
+echo "Перевіряємо файл налаштувань за шляхом: $SETTINGS_FILE"
 
-# Перевіряємо, чи існує файл
 if [ -f "$SETTINGS_FILE" ]; then
+    echo "Файл settings.js знайдено. Розпочинаємо редагування..."
+
     # Використовуємо sed для розкоментування та заміни потрібних рядків
     sed -i '/\/\/adminAuth: {/{N;N;N;N;s/\/\/adminAuth: {/adminAuth: {/;s/\/\/ *type: "credentials",/    type: "credentials",/;s/\/\/ *users: \[{/    users: \[{/}' "$SETTINGS_FILE"
 
@@ -25,7 +27,7 @@ if [ -f "$SETTINGS_FILE" ]; then
 
     echo "Файл settings.js успішно оновлений."
 else
-    echo "Файл settings.js не знайдено!"
+    echo "Помилка: файл settings.js не знайдено!"
 fi
 
 echo "Node-RED встановлено та налаштовано з користувачем kaiteki і паролем $PASSWORD."
