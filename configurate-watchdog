@@ -1,18 +1,18 @@
 #!/bin/bash
 
-# Визначаємо шлях до файлу
+# Define the path to the file
 FILE="/etc/systemd/system.conf"
 
-# Перевіряємо, чи є закоментована строка в файлі
+# Check if the commented line exists in the file
 if sudo grep -q '^#RuntimeWatchdogSec=' "$FILE"; then
-    # Заміна закоментованої строки на нову
+    # Replace the commented line with the new one
     sudo sed -i 's/^#RuntimeWatchdogSec=.*/RuntimeWatchdogSec=16/' "$FILE"
-    echo "Строка замінена на RuntimeWatchdogSec=16."
+    echo "Line replaced with RuntimeWatchdogSec=16."
 else
-    # Якщо строка не знайдена, додаємо нову в кінець файлу
+    # If the line is not found, append the new line to the end of the file
     echo "RuntimeWatchdogSec=16" | sudo tee -a "$FILE" > /dev/null
-    echo "Закоментована строка не знайдена. Додано RuntimeWatchdogSec=16 в кінець файлу."
+    echo "Commented line not found. Added RuntimeWatchdogSec=16 to the end of the file."
 fi
 
-# Виводимо повідомлення про успішне виконання
-echo "Зміни внесені успішно!"
+# Output a success message
+echo "Changes have been successfully made!"
