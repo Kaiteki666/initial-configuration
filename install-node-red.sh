@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# Перевіряємо, чи передано пароль
+if [ -z "$1" ]; then
+    echo "Будь ласка, передайте пароль як аргумент."
+    exit 1
+fi
+
+# Зберігаємо пароль в змінній
+PASSWORD="$1"
+
 # 1. Виконуємо встановлення Node-RED
 bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered) --confirm-root --confirm-install --skip-pi  --restart --no-init
 
@@ -10,7 +19,6 @@ sleep 15  # Чекаємо, щоб Node-RED створив налаштуван�
 node-red-stop
 
 # 3. Генеруємо парольний хеш і видаляємо "Password:" з хешу
-PASSWORD="23142314qW"
 HASHED_PASSWORD=$(echo "$PASSWORD" | node-red admin hash-pw | grep -o '\$.*')
 
 # 4. Оновлюємо файл settings.js
@@ -28,4 +36,4 @@ else
     echo "Помилка: файл settings.js не знайдено!"
 fi
 
-echo "Node-RED встановлено та налаштовано з користувачем kaiteki і паролем $PASSWORD."
+echo "Node-RED встановлено та налаштовано з користувачем kaiteki і паролем."
