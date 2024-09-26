@@ -9,9 +9,9 @@ if sudo grep -q '^#RuntimeWatchdogSec=' "$FILE"; then
     sudo sed -i 's/^#RuntimeWatchdogSec=.*/RuntimeWatchdogSec=16/' "$FILE"
     echo "Строка замінена на RuntimeWatchdogSec=16."
 else
-    # Якщо строка не знайдена, додаємо нову перед останнім рядком
-    sudo sed -i '$i RuntimeWatchdogSec=16' "$FILE"
-    echo "Закоментована строка не знайдена. Додано RuntimeWatchdogSec=16 перед останнім рядком."
+    # Якщо строка не знайдена, додаємо нову в кінець файлу
+    echo "RuntimeWatchdogSec=16" | sudo tee -a "$FILE" > /dev/null
+    echo "Закоментована строка не знайдена. Додано RuntimeWatchdogSec=16 в кінець файлу."
 fi
 
 # Виводимо повідомлення про успішне виконання
