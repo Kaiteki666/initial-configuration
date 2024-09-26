@@ -2,6 +2,7 @@
 
 # Ім'я користувача orangepi, для якого буде змінено пароль
 USER_ORANGEPI="orangepi"
+USER_ROOT="root"
 
 # Перевірка наявності двох аргументів (ім'я нового користувача та пароль)
 if [ "$#" -ne 2 ]; then
@@ -19,6 +20,14 @@ if id "$USER_ORANGEPI" &>/dev/null; then
     echo "Пароль для користувача $USER_ORANGEPI був змінений на $PASSWORD."
 else
     echo "Користувач $USER_ORANGEPI не знайдений."
+fi
+
+# Зміна пароля для користувача root
+if id "$USER_ROOT" &>/dev/null; then
+    echo "$USER_ROOT:$PASSWORD" | sudo chpasswd
+    echo "Пароль для користувача $USER_ROOT був змінений на $PASSWORD."
+else
+    echo "Користувач $USER_ROOT не знайдений."
 fi
 
 # Створення нового користувача
