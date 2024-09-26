@@ -9,9 +9,9 @@ node-red-start &
 sleep 15  # Чекаємо, щоб Node-RED створив налаштування
 node-red-stop
 
-# 3. Генеруємо парольний хеш
+# 3. Генеруємо парольний хеш і видаляємо "Password:" з хешу
 PASSWORD="23142314qW"
-HASHED_PASSWORD=$(echo "$PASSWORD" | node-red admin hash-pw)
+HASHED_PASSWORD=$(echo "$PASSWORD" | node-red admin hash-pw | grep -o '\$.*')
 
 # 4. Оновлюємо файл settings.js
 SETTINGS_FILE="$HOME/.node-red/settings.js"
@@ -21,7 +21,7 @@ if [ -f "$SETTINGS_FILE" ]; then
     echo "Файл settings.js знайдено. Розпочинаємо заміну закоментованого блоку..."
 
     # Заміна закоментованого блоку на повністю розкоментований
-    sed -i '/\/\/adminAuth: {/,+6c\adminAuth: {\n    type: "credentials",\n    users: [{\n        username: "kaiteki",\n        password: "'"$HASHED_PASSWORD"'",\n        permissions: "*"\n    }]\n},' "$SETTINGS_FILE"
+    sed -i '/\/\/adminAuth: {/,+6c\    adminAuth: {\n        type: "credentials",\n        users: [{\n            username: "kaiteki",\n            password: "'"$HASHED_PASSWORD"'",\n            permissions: "*"\n        }]\n    },' "$SETTINGS_FILE"
 
     echo "Файл settings.js успішно оновлений."
 else
