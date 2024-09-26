@@ -18,29 +18,10 @@ SETTINGS_FILE="$HOME/.node-red/settings.js"
 echo "Перевіряємо файл налаштувань за шляхом: $SETTINGS_FILE"
 
 if [ -f "$SETTINGS_FILE" ]; then
-    echo "Файл settings.js знайдено. Розпочинаємо редагування..."
+    echo "Файл settings.js знайдено. Розпочинаємо заміну закоментованого блоку..."
 
-    # 1. Розкоментовуємо рядок adminAuth
-    sed -i 's/\/\/adminAuth: {/adminAuth: {/g' "$SETTINGS_FILE"
-
-    # 2. Розкоментовуємо рядок з типом аутентифікації
-    sed -i 's/\/\/ *type: "credentials",/    type: "credentials",/g' "$SETTINGS_FILE"
-
-    # 3. Розкоментовуємо рядок з користувачами
-    sed -i 's/\/\/ *users: \[{/    users: \[{/g' "$SETTINGS_FILE"
-
-    # 4. Вставляємо ім'я користувача
-    sed -i 's/\/\/ *username: "admin",/        username: "kaiteki",/g' "$SETTINGS_FILE"
-
-    # 5. Замінюємо парольний хеш і розкоментовуємо
-    sed -i "/\/\/ *password: \"PASSWORD\"/c\\        password: \"$HASHED_PASSWORD\"," "$SETTINGS_FILE"
-
-    # 6. Розкоментовуємо права доступу
-    sed -i 's/\/\/ *permissions: "\*"/        permissions: "\*"/g' "$SETTINGS_FILE"
-
-    # 7. Розкоментовуємо закриття блоку
-    sed -i 's/\/\/ *}]/    }]/g' "$SETTINGS_FILE"
-    sed -i 's/\/\/ *},/    },/g' "$SETTINGS_FILE"
+    # Заміна закоментованого блоку на повністю розкоментований
+    sed -i '/\/\/adminAuth: {/,+6c\adminAuth: {\n    type: "credentials",\n    users: [{\n        username: "kaiteki",\n        password: "'"$HASHED_PASSWORD"'",\n        permissions: "*"\n    }]\n},' "$SETTINGS_FILE"
 
     echo "Файл settings.js успішно оновлений."
 else
