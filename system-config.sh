@@ -22,10 +22,6 @@ sudo apt upgrade -y
 echo "Configuring watchdog timer..."
 curl -sL https://raw.githubusercontent.com/Kaiteki666/initial-configuration/refs/heads/main/configurate-watchdog.sh | sudo bash -s
 
-# Зміна користувача
-echo "Changing user..."
-curl -sL https://raw.githubusercontent.com/Kaiteki666/initial-configuration/refs/heads/main/change_user.sh | sudo bash -s -- "$LOGIN" "$CHANGE_PASSWORD"
-
 # Встановлення cloudflared
 echo "Installing cloudflared..."
 curl -sL https://raw.githubusercontent.com/Kaiteki666/initial-configuration/main/install-cloudflared.sh | bash -s -- "$CLOUDFLARE_TOKEN"
@@ -33,6 +29,10 @@ curl -sL https://raw.githubusercontent.com/Kaiteki666/initial-configuration/main
 # Встановлення Node-RED
 echo "Installing Node-RED..."
 curl -sL https://raw.githubusercontent.com/Kaiteki666/initial-configuration/refs/heads/main/install-node-red.sh | sudo bash -s -- "$NODERED_USERNAME" "$NODERED_PASSWORD"
+
+# Зміна користувача
+echo "Changing user..."
+curl -sL https://raw.githubusercontent.com/Kaiteki666/initial-configuration/refs/heads/main/change_user.sh | sudo bash -s -- "$LOGIN" "$CHANGE_PASSWORD"
 
 # Перезавантаження системи
 echo "The system will reboot in 20 seconds..."
