@@ -37,3 +37,7 @@ else
     sudo useradd -m -p "$(openssl passwd -1 $PASSWORD)" "$NEW_USER"
     echo "Користувача $NEW_USER було створено з паролем $PASSWORD."
 fi
+
+# Вимкнення автоматичного входу
+sudo auto_login_cli.sh -d
+echo "Автоматичний вхід був вимкнений."
