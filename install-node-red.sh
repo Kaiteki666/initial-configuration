@@ -2,7 +2,7 @@
 
 # Check if username and password are provided
 if [ -z "$1" ] || [ -z "$2" ]; then
-    echo "Please provide a username and a password as arguments."
+    echo -e "\033[31mERROR:\033[0m Please provide a username and a password as arguments."
     echo "Usage: $0 <username> <password>"
     exit 1
 fi
@@ -12,23 +12,26 @@ USERNAME="$1"
 PASSWORD="$2"
 
 # 1. Execute Node-RED installation
+echo -e "\033[32m[INFO]\033[0m Installing Node-RED..."
 bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered) --confirm-root --confirm-install --skip-pi  --restart --no-init
 
 # 2. Start Node-RED to create the settings.js file
-echo "Starting Node-RED to initialize files..."
+echo -e "\033[32m[INFO]\033[0m Starting Node-RED to initialize files..."
 node-red-start &
 sleep 15  # Wait for Node-RED to create the settings
 node-red-stop
 
 # 3. Generate password hash
+echo -e "\033[32m[INFO]\033[0m Generating password hash..."
 HASHED_PASSWORD=$(echo "$PASSWORD" | node-red admin hash-pw | grep -o '\$.*')
+echo -e "\033[32m[INFO]\033[0m Password hash generated."
 
 # 4. Update the settings.js file
 SETTINGS_FILE="$HOME/.node-red/settings.js"
-echo "Checking the settings file at path: $SETTINGS_FILE"
+echo -e "\033[32m[INFO]\033[0m Checking the settings file at path: $SETTINGS_FILE"
 
 if [ -f "$SETTINGS_FILE" ]; then
-    echo "settings.js file found. Starting to replace the commented block..."
+    echo -e "\033[32m[INFO]\033[0m settings.js file found. Updating the adminAuth block and contextStorage..."
 
     # Replace the commented block with fully uncommented text and remove the extra commented bracket
     sed -i '/\/\/adminAuth: {/,+7c\    adminAuth: {\n        type: "credentials",\n        users: [{\n            username: "'"$USERNAME"'",\n            password: "'"$HASHED_PASSWORD"'",\n            permissions: "*"\n        }]\n    },' "$SETTINGS_FILE"
@@ -37,15 +40,15 @@ if [ -f "$SETTINGS_FILE" ]; then
     sed -i '/\/\/contextStorage: {/,+5c\
 contextStorage: {\n  default: "memoryOnly",\n  memoryOnly: { module: '\''memory'\'' },\n        file: { module: '\''localfilesystem'\'',\n                config: {\n                        flushInterval: 300\n                        },\n              },\n   },' "$SETTINGS_FILE"
 
-    echo "settings.js file successfully updated."
+    echo -e "\033[32m[INFO]\033[0m settings.js file successfully updated."
 else
-    echo "Error: settings.js file not found!"
+    echo -e "\033[31m[ERROR]\033[0m settings.js file not found!"
 fi
 
-echo "Node-RED installed and configured with user $USERNAME and the provided password."
+echo -e "\033[32m[INFO]\033[0m Node-RED installed and configured with user \033[33m$USERNAME\033[0m and the provided password."
 
 # 5. Install extensions for Node-RED
-echo "Installing extensions for Node-RED..."
+echo -e "\033[32m[INFO]\033[0m Installing extensions for Node-RED..."
 cd $HOME/.node-red && \
 npm install node-red-contrib-aedes && \
 npm install node-red-contrib-blynk-iot && \
@@ -57,7 +60,9 @@ npm install node-red-contrib-zigbee2mqtt-devices && \
 npm install node-red-node-ping && \
 npm install node-red-node-serialport
 
-echo "Extensions successfully installed."
+echo -e "\033[32m[INFO]\033[0m Extensions successfully installed."
 
 # 6. Enable Node-RED service to start on boot
+echo -e "\033[32m[INFO]\033[0m Enabling Node-RED service to start on boot..."
 sudo systemctl enable nodered.service
+echo -e "\033[32m[INFO]\033[0m Node-RED service enabled."
