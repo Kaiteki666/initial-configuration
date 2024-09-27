@@ -1,13 +1,15 @@
 #!/bin/bash
 
-# Check if password is provided
-if [ -z "$1" ]; then
-    echo "Please provide a password as an argument."
+# Check if username and password are provided
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "Please provide a username and a password as arguments."
+    echo "Usage: $0 <username> <password>"
     exit 1
 fi
 
-# Store the password in a variable
-PASSWORD="$1"
+# Store the username and password in variables
+USERNAME="$1"
+PASSWORD="$2"
 
 # 1. Execute Node-RED installation
 bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered) --confirm-root --confirm-install --skip-pi  --restart --no-init
@@ -29,7 +31,7 @@ if [ -f "$SETTINGS_FILE" ]; then
     echo "settings.js file found. Starting to replace the commented block..."
 
     # Replace the commented block with fully uncommented text and remove the extra commented bracket
-    sed -i '/\/\/adminAuth: {/,+7c\    adminAuth: {\n        type: "credentials",\n        users: [{\n            username: "kaiteki",\n            password: "'"$HASHED_PASSWORD"'",\n            permissions: "*"\n        }]\n    },' "$SETTINGS_FILE"
+    sed -i '/\/\/adminAuth: {/,+7c\    adminAuth: {\n        type: "credentials",\n        users: [{\n            username: "'"$USERNAME"'",\n            password: "'"$HASHED_PASSWORD"'",\n            permissions: "*"\n        }]\n    },' "$SETTINGS_FILE"
 
     # Replace context storage
     sed -i '/\/\/contextStorage: {/,+5c\
@@ -40,7 +42,7 @@ else
     echo "Error: settings.js file not found!"
 fi
 
-echo "Node-RED installed and configured with user kaiteki and password."
+echo "Node-RED installed and configured with user $USERNAME and the provided password."
 
 # 5. Install extensions for Node-RED
 echo "Installing extensions for Node-RED..."
@@ -56,8 +58,3 @@ npm install node-red-node-ping && \
 npm install node-red-node-serialport
 
 echo "Extensions successfully installed."
-
-# 6. Reboot the system after 20 seconds
-echo "The system will reboot in 20 seconds..."
-sleep 20
-sudo reboot
