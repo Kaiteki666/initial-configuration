@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Script Name: Node-RED Installation and Configuration
+# Description: This script installs Node-RED, configures it with user credentials,
+#              updates settings.js, installs necessary extensions, and enables the service to start on boot.
+
+# Display script name and description
+echo -e "\033[34m[INFO]\033[0m Running \033[36mNode-RED Installation and Configuration Script\033[0m"
+
 # Check if username and password are provided
 if [ -z "$1" ] || [ -z "$2" ]; then
     echo -e "\033[31mERROR:\033[0m Please provide a username and a password as arguments."
