@@ -58,3 +58,6 @@ npm install node-red-node-ping && \
 npm install node-red-node-serialport
 
 echo "Extensions successfully installed."
+
+# 6. Enable Node-RED service to start on boot
+sudo systemctl enable nodered.service
