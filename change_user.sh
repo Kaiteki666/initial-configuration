@@ -1,43 +1,43 @@
 #!/bin/bash
 
-# Ім'я користувача orangepi, для якого буде змінено пароль
+# Username for orangepi, whose password will be changed
 USER_ORANGEPI="orangepi"
 USER_ROOT="root"
 
-# Перевірка наявності двох аргументів (ім'я нового користувача та пароль)
+# Check if two arguments (new username and password) are provided
 if [ "$#" -ne 2 ]; then
-    echo "Використання: $0 <ім'я нового користувача> <пароль>"
+    echo -e "\e[31mUsage: $0 <new username> <password>\e[0m"
     exit 1
 fi
 
-# Отримання аргументів
+# Get the arguments
 NEW_USER=$1
 PASSWORD=$2
 
-# Зміна пароля для існуючого користувача orangepi
+# Change password for the existing user orangepi
 if id "$USER_ORANGEPI" &>/dev/null; then
     echo "$USER_ORANGEPI:$PASSWORD" | sudo chpasswd
-    echo "Пароль для користувача $USER_ORANGEPI був змінений на $PASSWORD."
+    echo -e "\e[32mPassword for user $USER_ORANGEPI has been changed to $PASSWORD.\e[0m"
 else
-    echo "Користувач $USER_ORANGEPI не знайдений."
+    echo -e "\e[31mUser $USER_ORANGEPI not found.\e[0m"
 fi
 
-# Зміна пароля для користувача root
+# Change password for the root user
 if id "$USER_ROOT" &>/dev/null; then
     echo "$USER_ROOT:$PASSWORD" | sudo chpasswd
-    echo "Пароль для користувача $USER_ROOT був змінений на $PASSWORD."
+    echo -e "\e[32mPassword for user $USER_ROOT has been changed to $PASSWORD.\e[0m"
 else
-    echo "Користувач $USER_ROOT не знайдений."
+    echo -e "\e[31mUser $USER_ROOT not found.\e[0m"
 fi
 
-# Створення нового користувача
+# Create a new user
 if id "$NEW_USER" &>/dev/null; then
-    echo "Користувач $NEW_USER вже існує."
+    echo -e "\e[33mUser $NEW_USER already exists.\e[0m"
 else
     sudo useradd -m -p "$(openssl passwd -1 $PASSWORD)" "$NEW_USER"
-    echo "Користувача $NEW_USER було створено з паролем $PASSWORD."
+    echo -e "\e[32mUser $NEW_USER has been created with password $PASSWORD.\e[0m"
 fi
 
-# Вимкнення автоматичного входу
+# Disable automatic login
 sudo auto_login_cli.sh -d
-echo "Автоматичний вхід був вимкнений."
+echo -e "\e[34mAutomatic login has been disabled.\e[0m"
