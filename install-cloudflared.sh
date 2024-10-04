@@ -2,7 +2,8 @@
 
 # Script Name: Cloudflare Tunnel Installation
 # Description: This script installs Cloudflare Tunnel, configures it with the provided token,
-#              and sets it up as a service to run on startup.
+#              and sets it up as a service to run on startup. If Cloudflare is already installed, 
+#              it will remove the previous installation and related files before reinstalling.
 
 # Display script name and description
 echo -e "\033[34m[INFO]\033[0m Running \033[36mCloudflare Tunnel Installation Script\033[0m"
@@ -15,10 +16,34 @@ fi
 
 TOKEN=$1
 
-# Update package list and upgrade the system
-echo -e "\033[34m[INFO]\033[0m Updating package list and upgrading the system..."
-sudo apt update
-sudo apt upgrade -y
+# Check if cloudflared is already installed
+if command -v cloudflared &> /dev/null; then
+    echo -e "\033[34m[INFO]\033[0m Cloudflared is already installed. Removing previous installation..."
+    
+    # Stop the service
+    echo -e "\033[34m[INFO]\033[0m Stopping cloudflared service..."
+    sudo systemctl stop cloudflared-tunnel.service
+    
+    # Disable the service
+    echo -e "\033[34m[INFO]\033[0m Disabling cloudflared service..."
+    sudo systemctl disable cloudflared-tunnel.service
+    
+    # Remove the binary
+    echo -e "\033[34m[INFO]\033[0m Removing cloudflared binary..."
+    sudo rm /usr/local/bin/cloudflared
+    
+    # Remove the service file
+    echo -e "\033[34m[INFO]\033[0m Removing systemd service file..."
+    sudo rm /etc/systemd/system/cloudflared-tunnel.service
+    
+    # Reload systemd to apply changes
+    echo -e "\033[34m[INFO]\033[0m Reloading systemd daemon..."
+    sudo systemctl daemon-reload
+    
+    echo -e "\033[34m[INFO]\033[0m Cloudflared has been removed successfully."
+else
+    echo -e "\033[34m[INFO]\033[0m No previous installation of cloudflared found."
+fi
 
 # Get the latest version of cloudflared
 LATEST_VERSION=$(curl -s https://api.github.com/repos/cloudflare/cloudflared/releases/latest | grep -Po '"tag_name": "\K.*?(?=")')
