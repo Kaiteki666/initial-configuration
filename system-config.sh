@@ -1,15 +1,15 @@
 #!/bin/bash
 
 # Script Name: Linux Setup Automation
-# Description: This script updates packages, configures the watchdog timer,
+# Description: This script updates packages, configures the watchdog timer (if specified),
 #              changes the user, installs cloudflared, and installs Node-RED.
 
 # Display script name and description
 echo -e "\033[34m[INFO]\033[0m Running \033[36mLinux Setup Automation Script\033[0m"
 
 # Check for the correct number of arguments
-if [ $# -ne 5 ]; then
-  echo -e "\033[31m[ERROR]\033[0m Usage: $0 <login> <change_password> <cloudflare_token> <nodered_username> <nodered_password>"
+if [ $# -ne 6 ]; then
+  echo -e "\033[31m[ERROR]\033[0m Usage: $0 <login> <change_password> <cloudflare_token> <nodered_username> <nodered_password> <watchdog_option>"
   exit 1
 fi
 
@@ -19,15 +19,20 @@ CHANGE_PASSWORD=$2
 CLOUDFLARE_TOKEN=$3
 NODERED_USERNAME=$4
 NODERED_PASSWORD=$5
+WATCHDOG_OPTION=$6
 
 # Update packages
 echo -e "\033[34m[INFO]\033[0m Updating packages..."
 sudo apt update
 sudo apt upgrade -y
 
-# Configure watchdog timer
-echo -e "\033[34m[INFO]\033[0m Configuring watchdog timer..."
-curl -sL https://raw.githubusercontent.com/Kaiteki666/initial-configuration/refs/heads/main/configurate-watchdog.sh | sudo bash -s
+# Conditionally configure watchdog timer
+if [ "$WATCHDOG_OPTION" == "watchdog" ]; then
+  echo -e "\033[34m[INFO]\033[0m Configuring watchdog timer..."
+  curl -sL https://raw.githubusercontent.com/Kaiteki666/initial-configuration/refs/heads/main/configurate-watchdog.sh | sudo bash -s
+else
+  echo -e "\033[33m[WARNING]\033[0m Watchdog timer configuration skipped."
+fi
 
 # Install cloudflared
 echo -e "\033[34m[INFO]\033[0m Installing cloudflared..."
