@@ -30,8 +30,11 @@ sudo apt upgrade -y
 if [ "$WATCHDOG_OPTION" == "watchdog" ]; then
   echo -e "\033[34m[INFO]\033[0m Configuring watchdog timer..."
   curl -sL https://raw.githubusercontent.com/Kaiteki666/initial-configuration/refs/heads/main/configurate-watchdog.sh | sudo bash -s
+elif [ "$WATCHDOG_OPTION" == "nowatchdog" ]; then
+  echo -e "\033[33m[INFO]\033[0m Watchdog configuration skipped."
 else
-  echo -e "\033[33m[WARNING]\033[0m Watchdog timer configuration skipped."
+  echo -e "\033[31m[ERROR]\033[0m Invalid watchdog option: Use 'watchdog' to configure or 'nowatchdog' to skip."
+  exit 1
 fi
 
 # Install cloudflared
