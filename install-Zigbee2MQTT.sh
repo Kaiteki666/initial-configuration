@@ -48,17 +48,23 @@ else
     echo -e "\033[34m[INFO]\033[0m No previous installation of Zigbee2MQTT found."
 fi
 
-# Check Node.js and npm versions
-echo -e "\033[34m[INFO]\033[0m Checking Node.js and npm versions..."
-node_version=$(node --version)
-npm_version=$(npm --version)
-echo -e "\033[34m[INFO]\033[0m Node.js version: $node_version"
-echo -e "\033[34m[INFO]\033[0m npm version: $npm_version"
+# Check if the required versions of Node.js and npm are installed
+NODE_VERSION=$(node --version | grep -Eo '[0-9]+\.[0-9]+')
+NPM_VERSION=$(npm --version | grep -Eo '^[0-9]+')
 
-if [[ "$node_version" < "v18" ]] || [[ "$npm_version" < "9" ]]; then
-    echo -e "\033[31m[ERROR]\033[0m Node.js (v18+) and npm (v9+) are required."
+# Check if the Node.js version is 18 or higher
+if [[ ${NODE_VERSION%%.*} -lt 18 ]]; then
+    echo -e "\033[31m[ERROR]\033[0m Node.js (v18+) is required. Current version: $(node --version)"
     exit 1
 fi
+
+# Check if the npm version is 9 or higher
+if [[ ${NPM_VERSION} -lt 9 ]]; then
+    echo -e "\033[31m[ERROR]\033[0m npm (v9+) is required. Current version: $(npm --version)"
+    exit 1
+fi
+
+echo -e "\033[34m[INFO]\033[0m Node.js and npm versions are sufficient."
 
 # Create Zigbee2MQTT directory and set permissions
 echo -e "\033[34m[INFO]\033[0m Creating Zigbee2MQTT directory..."
